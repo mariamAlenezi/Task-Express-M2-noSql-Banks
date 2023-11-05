@@ -1,6 +1,7 @@
-let accounts = require('../../accounts');
+const accounts = require("../../accounts");
+const Account = require("../../models/Account");
 
-exports.accountCreate = (req, res) => {
+exports.accountCreate = async (req, res) => {
   const id = accounts[accounts.length - 1].id + 1;
   const newAccount = { ...req.body, funds: 0, id };
   accounts.push(newAccount);
@@ -14,7 +15,7 @@ exports.accountDelete = (req, res) => {
     accounts = accounts.filter((account) => account.id !== +accountId);
     res.status(204).end();
   } else {
-    res.status(404).json({ message: 'Account not found' });
+    res.status(404).json({ message: "Account not found" });
   }
 };
 
@@ -25,11 +26,13 @@ exports.accountUpdate = (req, res) => {
     foundAccount.funds = req.body.funds;
     res.status(204).end();
   } else {
-    res.status(404).json({ message: 'Account not found' });
+    res.status(404).json({ message: "Account not found" });
   }
 };
 
-exports.accountsGet = (req, res) => {
+exports.accountsGet = async (req, res) => {
+  console.log("object");
+  const accounts = await Account.find();
   res.json(accounts);
 };
 
@@ -38,7 +41,7 @@ exports.getAccountByUsername = (req, res) => {
   const foundAccount = accounts.find(
     (account) => account.username === username
   );
-  if (req.query.currency === 'usd') {
+  if (req.query.currency === "usd") {
     const accountInUsd = { ...foundAccount, funds: foundAccount.funds * 3.31 };
     res.status(201).json(accountInUsd);
   }
